@@ -20,15 +20,18 @@ exports = Class(ui.View, function(supr) {
         this.build();
     };
     this.build = function() {
+
         setupLevel.call(this);
         startLevel.call(this);
+        findMoves.call(this);
 
     };
+
 });
 
 function findClusters() {
 
-    clusters = this.clusters;
+    var clusters = this.clusters;
 
     for (var row = 0; row < this.gemsOnScreen.length; row++) {
 
@@ -84,6 +87,7 @@ function findClusters() {
             }
         }
     }
+    return clusters;
 }
 
 function resetLevel(){
@@ -91,6 +95,7 @@ function resetLevel(){
     this.gemsOnScreen = [];
     this.inactive = true;
     this.clusters = [];
+    this.possibleMoves = [];
     setupLevel.call(this)
     startLevel.call(this)
 }
@@ -118,8 +123,8 @@ function startLevel(){
         this.gemsOnScreen.push(gemRow)
     }
 
-    findClusters.call(this);
-    while (clusters.length > 0) {
+    this.clusters = findClusters.call(this).slice();
+    while (this.clusters.length > 0) {
                 resetLevel.call(this);
             }
     
@@ -177,5 +182,47 @@ function setupLevel (){
         ];
         this.gemsOnScreen = [];
         this.inactive = true;
+        this.play = true;
         this.clusters = [];
+        this.possibleMoves = [];
 }
+
+
+function findMoves(){
+        var possibleMoves = []
+        var gemsOnScreen = this.gemsOnScreen;
+
+        for (var row = 0; row < gemsOnScreen.length; row++) {
+            for (var col = 0; col < gemsOnScreen[row].length - 1; col++) {
+                    transpose(gemsOnScreen, row, col, 1, 0);
+                    findClusters.call(this);
+                    transpose(gemsOnScreen, row, col, 1, 0)
+                    
+                    if(this.clusters.length > 0){
+                        possibleMoves.push({column: col, row: row, column2: col+1, row2: row})
+                    }
+                this.clusters = []
+            }
+        }
+
+        for (var col = 0; col < gemsOnScreen.length; col++) {       
+            for (var row = 0; row < gemsOnScreen[col].length - 1; row++) {
+                    transpose(gemsOnScreen, row, col, 0, 1);
+                    findClusters.call(this);
+                    transpose(gemsOnScreen, row, col, 0, 1)
+                    if(this.clusters.length > 0){
+                        possibleMoves.push({column: col, row: row, column2: col, row2: row + 1})
+                    }
+                this.clusters = []
+            }
+        }
+        
+        this.possibleMoves = possibleMoves;
+        
+        function transpose(array, row, col, x, y) {
+            var temp = array[row + y][col + x];
+            array[row + y][col + x] = array[row][col]
+            array[row][col] = temp;
+            return array;
+        }
+};
