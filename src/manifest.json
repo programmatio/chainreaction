@@ -1,0 +1,16 @@
+{
+  "appID": "2af80d87716145a480f014e9b0037fda",
+  "dependencies": {
+    "devkit-core": "https://github.com/gameclosure/devkit-core#"
+  },
+  "shortName": "chainreaction",
+  "studio": {
+    "domain": "studio.example.com",
+    "name": "Your Studio Name",
+    "stagingDomain": "staging.example.com"
+  },
+  "supportedOrientations": [
+    "portrait"
+  ],
+  "title": "chainreaction"
+}
