@@ -228,28 +228,28 @@ function findMoves(){
 
 function deleteClusters(){
     var toDelete;
+    var gem;
     if(this.clusters.length > 0){
         for (var index = 0; index < this.clusters.length; index++) {
             toDelete = this.clusters[index];
-            console.log(toDelete)
             if(toDelete.horizontal){
                 for(var col = toDelete.column; col < toDelete.column + toDelete.length; col++ ){
- 
+                        this.gemsOnScreen[toDelete.row][col].removeAllListeners('InputStart');
+                        this.gemsOnScreen[toDelete.row][col].removeAllListeners('Drag');
+                        this.gemsOnScreen[toDelete.row][col].removeAllListeners('swipe');
                         this.gemsOnScreen[toDelete.row][col].removeFromSuperview();
                         this.gemsOnScreen[toDelete.row][col] = null;
-
-
                 }
             }
             else {
                 for(var row = toDelete.row; row < toDelete.row + toDelete.length; row++ ){
-
-                                        //Check if common gem was deleted
+                    //Check if common gem was deleted
                     if (this.gemsOnScreen[row][toDelete.column]){
-                    this.gemsOnScreen[row][toDelete.column]
-                    .animate({opacity:0})
-                    this.gemsOnScreen[row][toDelete.column].removeFromSuperview();
-                    this.gemsOnScreen[row][toDelete.column] = null;
+                        this.gemsOnScreen[row][toDelete.column].removeAllListeners('InputStart');
+                        this.gemsOnScreen[row][toDelete.column].removeAllListeners('Drag');
+                        this.gemsOnScreen[row][toDelete.column].removeAllListeners('gem:swipe');
+                        this.gemsOnScreen[row][toDelete.column].removeFromSuperview();
+                        this.gemsOnScreen[row][toDelete.column] = null;
                     }
                     
                 }
@@ -270,7 +270,6 @@ function fillTheGaps(){
         for (var row = 0; row < this.gemsOnScreen.length; row++) {
             for (var col = 0; col < this.gemsOnScreen[row].length; col++) {
                 if(this.gemsOnScreen[row][col] === null){
-                    console.log("no gem at ", row, col )
                     gem = new Gem();
                     gem.style.x = this.xOffset + col * (gem.style.width + this.xPadding);
                     gem.style.y = this.yOffset + row * (gem.style.height + this.yPadding);
@@ -283,8 +282,8 @@ function fillTheGaps(){
 }
 
 function step(){
-    console.log("step")
     findClusters.call(this);
     deleteClusters.call(this);
+    findMoves.call(this);
 
 }
