@@ -72,6 +72,7 @@ exports = Class(ui.View, function (supr) {
 					});
 					animate(gemsOnScreen[row - 1][col]).now({y: gemsOnScreen[row - 1][col].style.y + 67});
 					game.gemsOnScreen = transpose(gemsOnScreen, row, col, 0, -1);
+					
 				}
 				
 				else if(direction === 'down' &&
@@ -109,9 +110,12 @@ exports = Class(ui.View, function (supr) {
 				} else {
 					game.inactive = true;
 				}
-	
+		game.step()
+
 
 		});
+
+
 
 		this.on('Drag', function (startEvt, dragEvt, delta) {
 			var game = this.getSuperview();
@@ -174,3 +178,4 @@ function transpose(array, row, col, x, y) {
   array[row][col] = temp;
   return array;
 }
+

@@ -27,6 +27,9 @@ exports = Class(ui.View, function(supr) {
 
     };
 
+    this.step = step;
+
+
 });
 
 function findClusters() {
@@ -101,7 +104,6 @@ function resetLevel(){
 }
 
 function startLevel(){
-
     var xOffset = this.xOffset;
     var yOffset = this.yOffset
     var xPadding = this.xPadding;
@@ -127,8 +129,6 @@ function startLevel(){
     while (this.clusters.length > 0) {
                 resetLevel.call(this);
             }
-    
-
 }
 
 function setupLevel (){
@@ -187,7 +187,6 @@ function setupLevel (){
         this.possibleMoves = [];
 }
 
-
 function findMoves(){
         var possibleMoves = []
         var gemsOnScreen = this.gemsOnScreen;
@@ -226,3 +225,66 @@ function findMoves(){
             return array;
         }
 };
+
+function deleteClusters(){
+    var toDelete;
+    if(this.clusters.length > 0){
+        for (var index = 0; index < this.clusters.length; index++) {
+            toDelete = this.clusters[index];
+            console.log(toDelete)
+            if(toDelete.horizontal){
+                for(var col = toDelete.column; col < toDelete.column + toDelete.length; col++ ){
+ 
+                        this.gemsOnScreen[toDelete.row][col].removeFromSuperview();
+                        this.gemsOnScreen[toDelete.row][col] = null;
+
+
+                }
+            }
+            else {
+                for(var row = toDelete.row; row < toDelete.row + toDelete.length; row++ ){
+
+                                        //Check if common gem was deleted
+                    if (this.gemsOnScreen[row][toDelete.column]){
+                    this.gemsOnScreen[row][toDelete.column]
+                    .animate({opacity:0})
+                    this.gemsOnScreen[row][toDelete.column].removeFromSuperview();
+                    this.gemsOnScreen[row][toDelete.column] = null;
+                    }
+                    
+                }
+            }
+        }
+    }
+    this.clusters = []; //reset clusters
+    fillTheGaps.call(this);
+    findClusters.call(this);
+    if(this.clusters.length > 0){
+        deleteClusters.call(this);
+    }
+    
+}
+
+function fillTheGaps(){
+        var gem; 
+        for (var row = 0; row < this.gemsOnScreen.length; row++) {
+            for (var col = 0; col < this.gemsOnScreen[row].length; col++) {
+                if(this.gemsOnScreen[row][col] === null){
+                    console.log("no gem at ", row, col )
+                    gem = new Gem();
+                    gem.style.x = this.xOffset + col * (gem.style.width + this.xPadding);
+                    gem.style.y = this.yOffset + row * (gem.style.height + this.yPadding);
+                    this.gemsOnScreen[row][col] = gem;
+                    this.addSubview(gem)
+                    
+                }
+            }
+        }
+}
+
+function step(){
+    console.log("step")
+    findClusters.call(this);
+    deleteClusters.call(this);
+
+}
