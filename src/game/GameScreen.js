@@ -20,20 +20,15 @@ exports = Class(ui.View, function(supr) {
         this.build();
     };
     this.build = function() {
-
         setupLevel.call(this);
         startLevel.call(this);
         findMoves.call(this);
-
     };
-
     this.step = step;
-
-
 });
 
 function findClusters() {
-
+       
     var clusters = this.clusters;
 
     for (var row = 0; row < this.gemsOnScreen.length; row++) {
@@ -215,25 +210,20 @@ function findMoves(){
                 this.clusters = []
             }
         }
-        
         this.possibleMoves = possibleMoves;
-        
-        function transpose(array, row, col, x, y) {
-            var temp = array[row + y][col + x];
-            array[row + y][col + x] = array[row][col]
-            array[row][col] = temp;
-            return array;
-        }
 };
 
 function deleteClusters(){
+   
     var toDelete;
+
     var gem;
     if(this.clusters.length > 0){
         for (var index = 0; index < this.clusters.length; index++) {
             toDelete = this.clusters[index];
             if(toDelete.horizontal){
                 for(var col = toDelete.column; col < toDelete.column + toDelete.length; col++ ){
+
                         this.gemsOnScreen[toDelete.row][col].removeAllListeners('InputStart');
                         this.gemsOnScreen[toDelete.row][col].removeAllListeners('Drag');
                         this.gemsOnScreen[toDelete.row][col].removeAllListeners('swipe');
@@ -245,6 +235,7 @@ function deleteClusters(){
                 for(var row = toDelete.row; row < toDelete.row + toDelete.length; row++ ){
                     //Check if common gem was deleted
                     if (this.gemsOnScreen[row][toDelete.column]){
+
                         this.gemsOnScreen[row][toDelete.column].removeAllListeners('InputStart');
                         this.gemsOnScreen[row][toDelete.column].removeAllListeners('Drag');
                         this.gemsOnScreen[row][toDelete.column].removeAllListeners('gem:swipe');
@@ -256,14 +247,39 @@ function deleteClusters(){
             }
         }
     }
-    this.clusters = []; //reset clusters
-    fillTheGaps.call(this);
-    findClusters.call(this);
-    if(this.clusters.length > 0){
-        deleteClusters.call(this);
-    }
-    
+    this.clusters = []; //reset clusters    
 }
+
+
+function moveGemsDown(){
+        var gem;
+        var targetPosition = 0;
+        var tmp;
+    for ( var col = 0; col < this.gemsOnScreen.length; col++) {
+        var source = this.gemsOnScreen.length - 1;
+        var destination = this.gemsOnScreen.length - 1;
+      while (source >= 0) {
+
+          if(this.gemsOnScreen[source][col] !== null){
+              swap.call(this, source, destination, col);
+            
+              destination--;
+          }
+          source--;
+      }
+    }
+  function swap(indx1, indx2, col){
+    var gem = this.gemsOnScreen[indx1][col];
+    this.gemsOnScreen[indx1][col] = this.gemsOnScreen[indx2][col];
+    this.gemsOnScreen[indx2][col] = gem;
+  }
+
+
+}
+
+
+
+
 
 function fillTheGaps(){
         var gem; 
@@ -272,18 +288,39 @@ function fillTheGaps(){
                 if(this.gemsOnScreen[row][col] === null){
                     gem = new Gem();
                     gem.style.x = this.xOffset + col * (gem.style.width + this.xPadding);
-                    gem.style.y = this.yOffset + row * (gem.style.height + this.yPadding);
+                    
                     this.gemsOnScreen[row][col] = gem;
                     this.addSubview(gem)
-                    
                 }
             }
         }
+         animateGems.call(this);
+
+    function animateGems (){
+        var gemsOnScreen = this.gemsOnScreen;
+        var gem;
+        for (var row = 0; row < gemsOnScreen.length; row++) {
+            for (var col = 0; col < gemsOnScreen[row].length; col++) {
+                gem = gemsOnScreen[row][col];
+                animate(gem).now({y:this.yOffset + row * (gem.style.height + this.yPadding)},  500, animate.easeOutBounce);
+            }
+        }
+    }
 }
 
 function step(){
     findClusters.call(this);
-    deleteClusters.call(this);
-    findMoves.call(this);
+    while (this.clusters.length > 0){
+        deleteClusters.call(this);
+        moveGemsDown.call(this);
+        fillTheGaps.call(this);
+        findClusters.call(this);
+    }
+}
 
+function transpose(array, row, col, x, y) {
+    var temp = array[row + y][col + x];
+    array[row + y][col + x] = array[row][col]
+    array[row][col] = temp;
+    return array;
 }

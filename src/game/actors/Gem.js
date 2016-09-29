@@ -18,7 +18,6 @@ exports = Class(ui.View, function (supr) {
 		opts = merge(opts, {
 			width: 66,
 			height: 66,
-			opacity: 0,
 			canHandleEvents: true
 		});
 
@@ -71,6 +70,7 @@ exports = Class(ui.View, function (supr) {
 
 				animate(this).now({ y: y - 67 }).then(function () {
 					game.inactive = true;
+					game.step()
 				});
 				animate(gemsOnScreen[row - 1][col]).now({ y: gemsOnScreen[row - 1][col].style.y + 67 });
 				game.gemsOnScreen = transpose(gemsOnScreen, row, col, 0, -1);
@@ -89,6 +89,7 @@ exports = Class(ui.View, function (supr) {
 
 				animate(this).now({ y: y + 67 }).then(function () {
 					game.inactive = true;
+								game.step()
 				});
 				animate(gemsOnScreen[row + 1][col]).now({ y: gemsOnScreen[row + 1][col].style.y - 67 });
 				game.gemsOnScreen = transpose(gemsOnScreen, row, col, 0, 1);
@@ -108,6 +109,7 @@ exports = Class(ui.View, function (supr) {
 
 				animate(this).now({ x: x - 67 }).then(function () {
 					game.inactive = true;
+								game.step()
 				});
 				animate(gemsOnScreen[row][col - 1]).now({ x: gemsOnScreen[row][col - 1].style.x + 67 });
 				game.gemsOnScreen = transpose(gemsOnScreen, row, col, -1, 0);
@@ -122,6 +124,7 @@ exports = Class(ui.View, function (supr) {
 
 				animate(this).now({ x: x + 67 }).then(function () {
 					game.inactive = true;
+								game.step()
 				});
 				animate(gemsOnScreen[row][col + 1]).now({ x: gemsOnScreen[row][col + 1].style.x - 67 });
 				game.gemsOnScreen = transpose(gemsOnScreen, row, col, 1, 0);
@@ -132,7 +135,7 @@ exports = Class(ui.View, function (supr) {
 				game.inactive = true;
 			}
 
-			game.step()
+
 
 		});
 
